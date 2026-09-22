@@ -1,0 +1,119 @@
+
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ML Idle Project V0.6</title>
+<style>
+:root{--bg:#080b14;--panel:#121827;--panel2:#0d1320;--line:#27324a;--txt:#eef2ff;--muted:#8995b5;--accent:#6878ff;--gold:#ffd45a;--good:#67d69b;--bad:#ef6d7d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#20294d,#080b14 48%);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,sans-serif}button,input{font:inherit}.app{max-width:1200px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:24px;font-weight:950}.muted{color:var(--muted);font-size:12px}.online{color:var(--good);font-size:11px}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0}.stat,.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}.stat label{display:block;color:var(--muted);font-size:10px}.stat b{font-size:16px}.nav{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.nav button{background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:10px 12px;border-radius:9px;white-space:nowrap}.nav button.active,.btn{background:var(--accent);border-color:var(--accent);color:white}.view{display:none}.view.active{display:block}.layout{display:grid;grid-template-columns:1.25fr .75fr;gap:10px}.battle{text-align:center;padding:30px 10px}.enemy{font-size:64px}.big{font-size:54px}.btn{border:0;border-radius:8px;padding:9px 12px;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px;border:1px solid var(--line);border-radius:9px;margin-top:7px;background:var(--panel2)}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.hero{cursor:pointer}.hero.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.heroIcon{font-size:38px}.tag{font-size:10px;color:var(--gold)}input,select{background:var(--panel2);color:var(--txt);border:1px solid var(--line);padding:9px;border-radius:8px;width:100%}.form{display:grid;gap:8px;max-width:380px;margin:40px auto}.hidden{display:none}.log{max-height:220px;overflow:auto;font-size:12px}.good{color:var(--good)}.bad{color:var(--bad)}.gold{color:var(--gold)}@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+</style><meta name="theme-color" content="#080b12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+:root{--safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:#080b12}
+body{margin:0;min-width:320px;padding-bottom:calc(76px + var(--safe-bottom));overscroll-behavior-y:none;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit}
+button{min-height:44px;touch-action:manipulation}
+input,select{min-height:44px}
+@media(max-width:700px){
+  body{font-size:15px}
+  h1{font-size:1.45rem} h2{font-size:1.15rem}
+  .container{padding:10px}
+  .grid,.cards,.heroes,.routes,.stats,.dashboard,.columns{grid-template-columns:1fr!important}
+  .card,.panel,.box,.section{border-radius:14px;padding:12px}
+  table{font-size:13px}
+  table th,table td{padding:8px 6px}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .actions button{width:100%}
+}
+.mobile-bottom-nav{
+ position:fixed;z-index:9999;left:0;right:0;bottom:0;
+ padding:7px 8px calc(7px + var(--safe-bottom));
+ background:rgba(8,11,18,.97);border-top:1px solid rgba(255,255,255,.1);
+ backdrop-filter:blur(14px);display:grid;grid-template-columns:repeat(5,1fr);gap:6px
+}
+.mobile-bottom-nav button{min-height:54px;border:0;border-radius:12px;background:transparent;color:#aab2c0;font-size:11px;font-weight:700}
+.mobile-bottom-nav button.active{background:#182131;color:#fff}
+.mobile-bottom-nav .ico{display:block;font-size:20px;line-height:20px;margin-bottom:2px}
+.mobile-fab{position:fixed;right:16px;bottom:calc(92px + var(--safe-bottom));z-index:9998;border:0;border-radius:50%;width:56px;height:56px;min-height:56px;font-size:23px}
+</style>
+
+</head><body><div class="app">
+<div id="auth" class="panel form"><h1>ML Idle Project V0.6</h1><p class="muted">Multiplayer · Idle · Capturas · PvP · Trocas · Guildas</p><input id="name" placeholder="Nome"><input id="pass" type="password" placeholder="Senha"><div style="display:flex;gap:7px"><button class="btn" id="login">Entrar</button><button class="btn" id="register">Criar conta</button></div><div id="authMsg" class="muted"></div></div>
+<div id="game" class="hidden">
+<div class="top"><div><div class="brand">⚔️ ML Idle Project</div><div class="muted">V0.6 Multiplayer</div></div><div><b id="playerName"></b> · <button class="btn" id="logout">Sair</button></div></div>
+<div class="stats"><div class="stat"><label>💰 Gold</label><b id="gold">0</b></div><div class="stat"><label>✨ Cristais</label><b id="gems">0</b></div><div class="stat"><label>⚡ Power</label><b id="power">0</b></div><div class="stat"><label>⚔️ Kills</label><b id="kills">0</b></div><div class="stat"><label>🏆 W/L</label><b id="wl">0/0</b></div></div>
+<div class="nav">
+<button data-v="hunt" class="active">🗺️ Hunt</button><button data-v="team">🦸 Equipe</button><button data-v="box">🎒 Box</button><button data-v="pvp">⚔️ PvP</button><button data-v="ranking">🏆 Ranking</button><button data-v="social">🤝 Social</button><button data-v="guild">🏰 Guilda</button><button data-v="chat">💬 Chat</button>
+</div>
+<section id="hunt" class="view active"><div class="layout"><div class="panel"><div class="muted">ROTA ATUAL</div><h2 id="routeName"></h2><div class="battle"><div class="enemy">👹</div><h2 id="enemy"></h2><p id="huntInfo" class="muted"></p><button class="btn" id="huntBtn">⚔️ Caçar</button></div></div><div class="panel"><h3>Automação</h3><p class="muted">A cada ciclo o servidor calcula combate, gold, kills e chance de captura.</p><button class="btn" id="autoBtn">▶️ Auto-Hunt: OFF</button><div id="routes"></div><hr><h3>Registro</h3><div class="log" id="log"></div></div></div></section>
+<section id="team" class="view"><div class="layout"><div class="panel"><h2>🦸 Equipe principal</h2><div class="grid" id="teamList"></div></div><div class="panel" id="teamDetail"></div></div></section>
+<section id="box" class="view"><div class="panel"><h2>🎒 Box / Capturas</h2><p class="muted">Selecione o slot da equipe e depois use uma captura para substituí-lo.</p><div id="boxList"></div></div></section>
+<section id="pvp" class="view"><div class="panel"><h2>⚔️ PvP</h2><p class="muted">O servidor resolve a batalha e registra o resultado.</p><div id="pvpList"></div></div></section>
+<section id="ranking" class="view"><div class="panel"><h2>🏆 Ranking</h2><div id="rankList"></div></div></section>
+<section id="social" class="view"><div class="panel"><h2>🤝 Jogadores</h2><input id="profileSearch" placeholder="ID do jogador"><button class="btn" id="profileBtn">Abrir perfil</button><div id="profile"></div><hr><h3>Troca</h3><input id="tradeTarget" placeholder="ID do jogador"><input id="tradeHero" placeholder="UID do herói no Box"><button class="btn" id="tradeBtn">Enviar troca</button><div id="trades"></div></div></section>
+<section id="guild" class="view"><div class="panel"><h2>🏰 Guildas</h2><div style="display:grid;gap:7px;max-width:400px"><input id="guildName" placeholder="Nome da nova guilda"><button class="btn" id="createGuild">Criar guilda</button><input id="guildId" placeholder="ID da guilda"><button class="btn" id="joinGuild">Entrar na guilda</button></div><div id="guildList"></div></div></section>
+<section id="chat" class="view"><div class="panel"><h2>💬 Chat global</h2><div class="log" id="chatLog"></div><div style="display:flex;gap:7px"><input id="chatInput" placeholder="Mensagem"><button class="btn" id="sendChat">Enviar</button></div></div></section>
+</div></div>
+<script>
+const $=id=>document.getElementById(id), API="";
+let token=localStorage.getItem("mlv06_token")||"", S=null, selectedSlot=0, auto=false, timer=null;
+const routes=[{id:1,name:"Floresta Inicial",enemy:"Lunox Beast",lvl:1},{id:2,name:"Ruínas Antigas",enemy:"Stone Golem",lvl:8},{id:3,name:"Vale Sombrio",enemy:"Shadow Fiend",lvl:18},{id:4,name:"Templo Celestial",enemy:"Celestial Guard",lvl:30},{id:5,name:"Abismo",enemy:"Abyss Lord",lvl:50}];
+async function api(path,opts={}){opts.headers={...(opts.headers||{}),"Content-Type":"application/json",Authorization:"Bearer "+token};let r=await fetch(API+path,opts),j=await r.json();if(!r.ok)throw Error(j.error||"Erro");return j}
+function msg(t){$("authMsg").textContent=t}
+function fmt(n){return Math.floor(n).toLocaleString("pt-BR")}
+function rank(h){let names=["Guerreiro","Elite","Mestre","Grande Mestre","Épico","Lenda","Mítico"];let subs=[["III","II","I"],["III","II","I"],["IV","III","II","I"],["V","IV","III","II","I"],["V","IV","III","II","I"],["V","IV","III","II","I"],[""]];return names[h.rank]+(subs[h.rank][h.sub]?" "+subs[h.rank][h.sub]:"")}
+function log(t){$("log").innerHTML="<div>"+t+"</div>"+$("log").innerHTML}
+function render(){
+ $("playerName").textContent=S.name;$("gold").textContent=fmt(S.gold);$("gems").textContent=fmt(S.gems);$("power").textContent=fmt(S.power);$("kills").textContent=S.kills;$("wl").textContent=(S.wins||0)+"/"+(S.losses||0);
+ let r=routes[S.route-1]||routes[0];$("routeName").textContent=r.id+"-1 · "+r.name;$("enemy").textContent=r.enemy;$("huntInfo").textContent="Nível recomendado "+r.lvl+" · Power atual "+fmt(S.power);
+ $("teamList").innerHTML=S.heroes.map((h,i)=>`<div class="card hero ${i===selectedSlot?"sel":""}" onclick="selectedSlot=${i};render()"><div class="heroIcon">${h.icon}</div><b>${h.name}</b><div class="tag">${rank(h)}</div><div class="muted">IV ${h.iv}% · Nv. ${h.level} · Power ${fmt(h.power||0)}</div></div>`).join("");
+ let h=S.heroes[selectedSlot];$("teamDetail").innerHTML=`<div class="big">${h.icon}</div><h2>${h.name}</h2><p>${rank(h)} · ${h.role}</p><p>IV <b>${h.iv}%</b> · Nível <b>${h.level}</b></p><p>Power <b>${fmt(h.power||0)}</b></p><p class="muted">Slot selecionado: ${selectedSlot+1}. No Box, uma captura substituirá este herói e enviará o antigo para o Box.</p>`;
+ $("boxList").innerHTML=S.boxes.length?S.boxes.map((h,i)=>`<div class="row"><div>${h.icon} <b>${h.name}</b><div class="tag">${rank(h)} · IV ${h.iv}% · Nv.${h.level}</div><div class="muted">UID: ${h.uid}</div></div><button class="btn" onclick="useCap(${i})">Usar no slot ${selectedSlot+1}</button></div>`).join(""):"<p class='muted'>Nenhuma captura.</p>";
+ $("routes").innerHTML=routes.map(r=>`<div class="row"><span>${r.id}-1 ${r.name}<br><small class="muted">Nível ${r.lvl}</small></span><button class="btn" ${S.power<r.lvl*50?"disabled":""} onclick="travel(${r.id})">${S.route===r.id?"Ativa":"Viajar"}</button></div>`).join("");
+}
+async function refresh(){let j=await api("/api/state");S=j.state;render()}
+async function hunt(){try{let j=await api("/api/hunt",{method:"POST",body:"{}"});S=j.state;render();log("⚔️ +"+j.kills+" kills · +"+fmt(j.gold)+" Gold");if(j.capture){if(j.capture.success)log("🎯 Capturado "+j.capture.hero.name+" — "+rank(j.capture.hero)+" · chance "+Math.round(j.capture.chance*100)+"%");else log("💨 "+j.capture.hero.name+" escapou — chance "+Math.round(j.capture.chance*100)+"%")}}catch(e){log(e.message)}}
+async function useCap(i){try{let j=await api("/api/use-capture",{method:"POST",body:JSON.stringify({index:i,slot:selectedSlot})});S=j.state;render();log("🦸 Captura colocada no slot "+(selectedSlot+1))}catch(e){log(e.message)}}
+async function travel(id){S.route=id;await api("/api/save",{method:"POST",body:JSON.stringify({state:S})});render();log("🌎 Viajou para "+routes[id-1].name)}
+async function loadRanking(){let j=await api("/api/ranking");$("rankList").innerHTML=j.players.map((p,i)=>`<div class="row"><span>#${i+1} <b>${p.name}</b><br><small class="muted">ID ${p.id} · ${p.power} Power</small></span><span>🏆 ${p.wins}/${p.losses}</span></div>`).join("")}
+async function loadPvp(){let j=await api("/api/ranking");$("pvpList").innerHTML=j.players.filter(p=>p.id!==S.id).map(p=>`<div class="row"><span><b>${p.name}</b><br><small>${fmt(p.power)} Power · ID ${p.id}</small></span><button class="btn" onclick="fight('${p.id}')">⚔️ Lutar</button></div>`).join("")}
+async function fight(id){try{let j=await api("/api/pvp",{method:"POST",body:JSON.stringify({targetId:id})});S.wins=j.attacker.wins;S.losses=j.attacker.losses;render();log(j.win?"🏆 Vitória no PvP!":"💀 Derrota no PvP.");}catch(e){log(e.message)}}
+async function loadSocial(){let j=await api("/api/trades");$("trades").innerHTML=j.trades.map(t=>`<div class="row"><span>${t.fromName} → ${t.toName}<br>${t.hero.icon} ${t.hero.name}</span>${t.to===S.id&&t.status==="pending"?`<button class="btn" onclick="acceptTrade('${t.id}')">Aceitar</button>`:""}<small>${t.status}</small></div>`).join("")}
+async function acceptTrade(id){try{let j=await api("/api/trade/accept",{method:"POST",body:JSON.stringify({tradeId:id})});S=j.state;render();loadSocial()}catch(e){log(e.message)}}
+async function loadGuilds(){let j=await api("/api/guilds");$("guildList").innerHTML=j.guilds.map(g=>`<div class="row"><span><b>${g.name}</b><br><small>ID ${g.id} · ${g.members} membros · ${fmt(g.power)} Power</small></span></div>`).join("")}
+async function loadChat(){let j=await api("/api/chat");$("chatLog").innerHTML=j.messages.map(m=>`<div><b>${m.user}:</b> ${m.text}</div>`).join("")}
+$("login").onclick=async()=>{try{let j=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("name").value,password:$("pass").value})}).then(r=>r.json());if(!j.token)throw Error(j.error);token=j.token;localStorage.setItem("mlv06_token",token);S=j.state;showGame();}catch(e){msg(e.message)}};
+$("register").onclick=async()=>{try{let j=await fetch("/api/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("name").value,password:$("pass").value})}).then(r=>r.json());if(!j.token)throw Error(j.error);token=j.token;localStorage.setItem("mlv06_token",token);S=j.state;showGame();}catch(e){msg(e.message)}};
+function showGame(){$("auth").classList.add("hidden");$("game").classList.remove("hidden");render();refresh();setInterval(refresh,30000)}
+$("logout").onclick=()=>{localStorage.removeItem("mlv06_token");location.reload()}
+$("huntBtn").onclick=hunt;
+$("autoBtn").onclick=()=>{auto=!auto;$("autoBtn").textContent=auto?"⏸️ Auto-Hunt: ON":"▶️ Auto-Hunt: OFF";if(auto){hunt();timer=setInterval(hunt,5000)}else clearInterval(timer)}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));$(b.dataset.v).classList.add("active");if(b.dataset.v==="ranking")loadRanking();if(b.dataset.v==="pvp")loadPvp();if(b.dataset.v==="social")loadSocial();if(b.dataset.v==="guild")loadGuilds();if(b.dataset.v==="chat")loadChat()});
+$("profileBtn").onclick=async()=>{try{let j=await api("/api/profile?id="+encodeURIComponent($("profileSearch").value));let p=j.user;$("profile").innerHTML=`<div class="card"><h3>${p.name}</h3><p>Power ${fmt(p.power)} · W/L ${p.wins}/${p.losses}</p><p>Guilda: ${p.guild||"nenhuma"}</p>${p.heroes.map(h=>`<div class="row">${h.icon} ${h.name} · ${h.rank} · IV ${h.iv}%</div>`).join("")}</div>`}catch(e){$("profile").textContent=e.message}}
+$("tradeBtn").onclick=async()=>{try{await api("/api/trade",{method:"POST",body:JSON.stringify({targetId:$("tradeTarget").value,heroUid:$("tradeHero").value})});loadSocial();log("📦 Pedido de troca enviado.")}catch(e){log(e.message)}}
+$("createGuild").onclick=async()=>{try{let j=await api("/api/guild/create",{method:"POST",body:JSON.stringify({name:$("guildName").value})});S.guild=j.guild.id;log("🏰 Guilda criada.");loadGuilds()}catch(e){log(e.message)}}
+$("joinGuild").onclick=async()=>{try{let j=await api("/api/guild/join",{method:"POST",body:JSON.stringify({guildId:$("guildId").value})});S.guild=j.guild.id;log("🏰 Entrou na guilda.");loadGuilds()}catch(e){log(e.message)}}
+$("sendChat").onclick=async()=>{try{await api("/api/chat",{method:"POST",body:JSON.stringify({text:$("chatInput").value})});$("chatInput").value="";loadChat()}catch(e){log(e.message)}}
+if(token)refresh().then(()=>showGame()).catch(()=>localStorage.removeItem("mlv06_token"));
+</script>
+<script>
+(function(){
+ document.body.classList.toggle('pwa',matchMedia('(display-mode: standalone)').matches||navigator.standalone===true);
+ const nav=document.createElement('div');
+ nav.className='mobile-bottom-nav';
+ nav.innerHTML='<button data-tab="hunt"><span class="ico">⚔️</span>Caçar</button><button data-tab="team"><span class="ico">🦸</span>Equipe</button><button data-tab="box"><span class="ico">🎒</span>Box</button><button data-tab="pvp"><span class="ico">🏆</span>PvP</button><button data-tab="social"><span class="ico">💬</span>Social</button>';
+ document.body.appendChild(nav);
+ nav.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-tab]');if(!b)return;
+  nav.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));
+  const n=b.dataset.tab;
+  const el=document.querySelector('#tab-'+n)||document.querySelector('#'+n)||document.querySelector('[onclick*="'+n+'"]');
+  if(el&&el!==b)el.click();
+ });
+ if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+})();
+</script>
+
+</body></html>
